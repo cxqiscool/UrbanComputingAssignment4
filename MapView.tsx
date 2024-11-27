@@ -6,14 +6,18 @@ import { Monitor } from './types';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
-// Set default icon options with external URLs
-L.Icon.Default.mergeOptions({
+// Define a custom icon
+const customIcon = L.icon({
     iconRetinaUrl:
         'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png',
     iconUrl:
         'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png',
     shadowUrl:
         'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
+    iconSize: [25, 41], // Size of the icon
+    iconAnchor: [12, 41], // Point of the icon which will correspond to marker's location
+    popupAnchor: [1, -34], // Point from which the popup should open relative to the iconAnchor
+    shadowSize: [41, 41], // Size of the shadow
 });
 
 interface MapViewProps {
@@ -39,6 +43,7 @@ const MapView: React.FC<MapViewProps> = ({ monitors }) => {
                         <Marker
                             key={monitor.serial_number}
                             position={[monitor.latitude, monitor.longitude]}
+                            icon={customIcon} // Use the custom icon here
                         >
                             <Popup>
                                 <strong>{monitor.label}</strong>

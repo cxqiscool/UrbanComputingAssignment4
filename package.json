@@ -15,6 +15,7 @@
     "react": "18.3.1",
     "react-leaflet": "^4.2.1",
     "react-native": "0.76.3",
+    "react-native-maps": "^1.20.1",
     "react-native-web": "^0.19.13"
   },
   "devDependencies": {
