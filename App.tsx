@@ -1,13 +1,12 @@
-// App.tsx
-
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, View, FlatList } from 'react-native';
+import { StyleSheet, Text, View, FlatList, TouchableOpacity } from 'react-native';
 import { Monitor } from './types';
 import MapView from './MapView';
 
 export default function App() {
     const [data, setData] = useState<Monitor[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
+    const [selectedMonitor, setSelectedMonitor] = useState<Monitor | null>(null);
 
     useEffect(() => {
         fetch('http://localhost:8080/api/monitors')
@@ -23,15 +22,17 @@ export default function App() {
     }, []);
 
     const renderItem = ({ item }: { item: Monitor }) => (
-        <View style={styles.item}>
-            <Text style={styles.title}>{item.label}</Text>
-            <Text>Location: {item.location}</Text>
-            <Text>Serial Number: {item.serial_number}</Text>
-            <Text>Last Calibrated: {item.last_calibrated || 'N/A'}</Text>
-            <Text>
-                Coordinates: {item.latitude ?? 'N/A'}, {item.longitude ?? 'N/A'}
-            </Text>
-        </View>
+        <TouchableOpacity onPress={() => setSelectedMonitor(item)}>
+            <View style={styles.item}>
+                <Text style={styles.title}>{item.label}</Text>
+                <Text>Location: {item.location}</Text>
+                <Text>Serial Number: {item.serial_number}</Text>
+                <Text>Last Calibrated: {item.last_calibrated || 'N/A'}</Text>
+                <Text>
+                    Coordinates: {item.latitude ?? 'N/A'}, {item.longitude ?? 'N/A'}
+                </Text>
+            </View>
+        </TouchableOpacity>
     );
 
     if (loading) {
@@ -52,7 +53,7 @@ export default function App() {
                 />
             </View>
             <View style={styles.mapContainer}>
-                <MapView monitors={data} />
+                <MapView monitors={data} selectedMonitor={selectedMonitor} />
             </View>
         </View>
     );

@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import { Monitor, MonitorData } from './types';
-import L from 'leaflet';
+import L, { Map as LeafletMap, LeafletEvent } from 'leaflet'; // Import Leaflet types
 import 'leaflet/dist/leaflet.css';
 import DataPopup from './DataPopup';
 
@@ -20,13 +20,31 @@ const customIcon = L.icon({
 
 interface MapViewProps {
     monitors: Monitor[];
+    selectedMonitor: Monitor | null;
 }
 
-const MapView: React.FC<MapViewProps> = ({ monitors }) => {
-    const position: [number, number] = [53.35, -6.26];
+const MapView: React.FC<MapViewProps> = ({ monitors, selectedMonitor }) => {
+    const initialPosition: [number, number] = [53.35, -6.26];
     const [selectedMonitorData, setSelectedMonitorData] = useState<MonitorData[] | null>(null);
     const [loadingData, setLoadingData] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
+
+    const mapRef = useRef<LeafletMap | null>(null);
+
+    // Pan to the selected monitor
+    useEffect(() => {
+        if (selectedMonitor && mapRef.current) {
+            const { latitude, longitude } = selectedMonitor;
+
+            if (latitude !== null && longitude !== null) {
+                // Using `flyTo` instead of `setView` for smooth animation
+                mapRef.current.flyTo([latitude, longitude], 14, {
+                    animate: true,
+                    duration: 1.5, // Duration in seconds
+                });
+            }
+        }
+    }, [selectedMonitor]);
 
     const fetchMonitorData = async (serialNumber: string) => {
         setLoadingData(true);
@@ -48,10 +66,17 @@ const MapView: React.FC<MapViewProps> = ({ monitors }) => {
 
     return (
         <>
-            <MapContainer center={position} zoom={12} style={{ height: '100%', width: '100%' }}>
+            <MapContainer
+                center={initialPosition}
+                zoom={12}
+                style={{ height: '100%', width: '100%' }}
+                whenReady={(event: LeafletEvent) => {
+                    mapRef.current = event.target as LeafletMap; // Set map reference properly
+                }}
+            >
                 <TileLayer
-                    attribution='&copy; OpenStreetMap contributors'
-                    url='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
+                    attribution="&copy; OpenStreetMap contributors"
+                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 />
                 {monitors.map((monitor) => {
                     if (monitor.latitude !== null && monitor.longitude !== null) {
@@ -61,7 +86,9 @@ const MapView: React.FC<MapViewProps> = ({ monitors }) => {
                                 position={[monitor.latitude, monitor.longitude]}
                                 icon={customIcon}
                                 eventHandlers={{
-                                    click: () => fetchMonitorData(monitor.serial_number),
+                                    click: () => {
+                                        fetchMonitorData(monitor.serial_number);
+                                    },
                                 }}
                             >
                                 <Popup>
@@ -80,11 +107,9 @@ const MapView: React.FC<MapViewProps> = ({ monitors }) => {
                 })}
             </MapContainer>
 
-            {/* Render the DataPopup outside the MapContainer to prevent it from being affected by map events */}
             {selectedMonitorData && (
                 <DataPopup data={selectedMonitorData} onClose={() => setSelectedMonitorData(null)} />
             )}
-
             {loadingData && <div className="loading-overlay">Loading data...</div>}
             {error && <div className="error-overlay">{error}</div>}
         </>
