@@ -11,6 +11,11 @@ interface DataPopupProps {
 }
 
 const DataPopup: React.FC<DataPopupProps> = ({ data, onClose }) => {
+    // Calculate analysis metrics
+    const averageNoise = (data.reduce((sum, item) => sum + item.laeq, 0) / data.length).toFixed(2);
+    const peakNoise = Math.max(...data.map((item) => item.laeq)).toFixed(2);
+    const thresholdCount = data.filter((item) => item.laeq > 80).length;
+
     // Format the data for the chart
     const chartData = {
         labels: data.map((item) => {
@@ -35,7 +40,12 @@ const DataPopup: React.FC<DataPopupProps> = ({ data, onClose }) => {
                 <button className="close-button" onClick={onClose}>
                     ×
                 </button>
-                <h2>Monitor Data</h2>
+                <h2>Monitor Data Analysis</h2>
+                <div className="analysis-summary">
+                    <p><strong>Average Noise Level:</strong> {averageNoise} dB</p>
+                    <p><strong>Peak Noise Level:</strong> {peakNoise} dB</p>
+                    <p><strong>Readings Above Threshold (80 dB):</strong> {thresholdCount}</p>
+                </div>
                 <div className="chart-container">
                     <Line
                         data={chartData}

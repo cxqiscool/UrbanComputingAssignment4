@@ -1,27 +1,24 @@
+.analysis-summary {
+    text-align: left;
+    margin-bottom: 10px;
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
 .data-popup {
     position: relative;
     background: white;
     padding: 15px;
     border-radius: 8px;
-    width: 300px; /* Reduce width */
-    height: 250px; /* Reduce height */
+    width: 300px;
+    height: 320px; /* Increased height for chart and summary */
     display: flex;
     flex-direction: column;
     align-items: center;
     z-index: 1001;
 }
 
-.close-button {
-    position: absolute;
-    top: 8px;
-    right: 8px;
-    background: none;
-    border: none;
-    font-size: 1.2rem;
-    cursor: pointer;
-}
-
 .chart-container {
     width: 100%;
-    height: 150px; /* Reduce chart height */
+    height: 150px;
 }
