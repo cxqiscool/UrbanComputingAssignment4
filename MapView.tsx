@@ -1,5 +1,3 @@
-// MapView.tsx
-
 import React, { useState } from 'react';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import { Monitor, MonitorData } from './types';
@@ -39,7 +37,6 @@ const MapView: React.FC<MapViewProps> = ({ monitors }) => {
                 throw new Error('Failed to fetch monitor data');
             }
             const data: MonitorData[] = await response.json();
-            console.log(serialNumber, data);
             setSelectedMonitorData(data);
         } catch (err) {
             console.error(err);
@@ -50,44 +47,47 @@ const MapView: React.FC<MapViewProps> = ({ monitors }) => {
     };
 
     return (
-        <MapContainer center={position} zoom={12} style={{ height: '100%', width: '100%' }}>
-            <TileLayer
-                attribution='&copy; OpenStreetMap contributors'
-                url='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
-            />
-            {monitors.map((monitor) => {
-                if (monitor.latitude !== null && monitor.longitude !== null) {
-                    return (
-                        <Marker
-                            key={monitor.serial_number}
-                            position={[monitor.latitude, monitor.longitude]}
-                            icon={customIcon}
-                            eventHandlers={{
-                                click: () => {
-                                    fetchMonitorData(monitor.serial_number);
-                                },
-                            }}
-                        >
-                            <Popup>
-                                <div style={{ textAlign: 'center' }}>
-                                    <h3>{monitor.label}</h3>
-                                    <p>{monitor.location}</p>
-                                    <button onClick={() => fetchMonitorData(monitor.serial_number)}>
-                                        View Data
-                                    </button>
-                                </div>
-                            </Popup>
-                        </Marker>
-                    );
-                }
-                return null;
-            })}
+        <>
+            <MapContainer center={position} zoom={12} style={{ height: '100%', width: '100%' }}>
+                <TileLayer
+                    attribution='&copy; OpenStreetMap contributors'
+                    url='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
+                />
+                {monitors.map((monitor) => {
+                    if (monitor.latitude !== null && monitor.longitude !== null) {
+                        return (
+                            <Marker
+                                key={monitor.serial_number}
+                                position={[monitor.latitude, monitor.longitude]}
+                                icon={customIcon}
+                                eventHandlers={{
+                                    click: () => fetchMonitorData(monitor.serial_number),
+                                }}
+                            >
+                                <Popup>
+                                    <div style={{ textAlign: 'center' }}>
+                                        <h3>{monitor.label}</h3>
+                                        <p>{monitor.location}</p>
+                                        <button onClick={() => fetchMonitorData(monitor.serial_number)}>
+                                            View Data
+                                        </button>
+                                    </div>
+                                </Popup>
+                            </Marker>
+                        );
+                    }
+                    return null;
+                })}
+            </MapContainer>
+
+            {/* Render the DataPopup outside the MapContainer to prevent it from being affected by map events */}
             {selectedMonitorData && (
                 <DataPopup data={selectedMonitorData} onClose={() => setSelectedMonitorData(null)} />
             )}
+
             {loadingData && <div className="loading-overlay">Loading data...</div>}
             {error && <div className="error-overlay">{error}</div>}
-        </MapContainer>
+        </>
     );
 };
 

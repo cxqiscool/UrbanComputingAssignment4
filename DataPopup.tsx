@@ -1,5 +1,3 @@
-// DataPopup.tsx
-
 import React from 'react';
 import { MonitorData } from './types';
 
