@@ -36,7 +36,36 @@ const DataPopup: React.FC<DataPopupProps> = ({ data, onClose }) => {
                     ×
                 </button>
                 <h2>Monitor Data</h2>
-                <Line data={chartData} options={{ responsive: true, maintainAspectRatio: false }} />
+                <div className="chart-container">
+                    <Line
+                        data={chartData}
+                        options={{
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    display: false, // Hide legend to save space
+                                },
+                            },
+                            scales: {
+                                x: {
+                                    ticks: {
+                                        font: {
+                                            size: 10, // Smaller font size for x-axis
+                                        },
+                                    },
+                                },
+                                y: {
+                                    ticks: {
+                                        font: {
+                                            size: 10, // Smaller font size for y-axis
+                                        },
+                                    },
+                                },
+                            },
+                        }}
+                    />
+                </div>
             </div>
         </div>
     );
