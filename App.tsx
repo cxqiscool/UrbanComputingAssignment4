@@ -61,13 +61,16 @@ export default function App() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        flexDirection: 'row', // Arrange children in a row (side by side)
     },
     listContainer: {
-        flex: 1,
+        flex: 1, // Occupies less space
+        maxWidth: '30%', // Optional: Define a specific width
+        backgroundColor: '#f0f0f0', // Optional: Background for visibility
     },
     mapContainer: {
-        flex: 1,
-        minHeight: 300, // Ensure the map has enough height to display
+        flex: 3, // Occupies more space
+        backgroundColor: '#fff', // Optional: Background for visibility
     },
     item: {
         backgroundColor: '#e0f7fa',
