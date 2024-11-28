@@ -108,7 +108,10 @@ const MapView: React.FC<MapViewProps> = ({ monitors, selectedMonitor }) => {
             </MapContainer>
 
             {selectedMonitorData && (
-                <DataPopup data={selectedMonitorData} onClose={() => setSelectedMonitorData(null)} />
+                <DataPopup
+                    data={selectedMonitorData}
+                    onClose={() => setSelectedMonitorData(null)}
+                />
             )}
             {loadingData && <div className="loading-overlay">Loading data...</div>}
             {error && <div className="error-overlay">{error}</div>}

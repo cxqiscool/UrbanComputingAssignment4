@@ -1,5 +1,9 @@
 import React from 'react';
+import { Line } from 'react-chartjs-2';
+import { Chart as ChartJS, LineElement, CategoryScale, LinearScale, PointElement, Tooltip, Legend } from 'chart.js';
 import { MonitorData } from './types';
+
+ChartJS.register(LineElement, CategoryScale, LinearScale, PointElement, Tooltip, Legend);
 
 interface DataPopupProps {
     data: MonitorData[];
@@ -7,6 +11,24 @@ interface DataPopupProps {
 }
 
 const DataPopup: React.FC<DataPopupProps> = ({ data, onClose }) => {
+    // Format the data for the chart
+    const chartData = {
+        labels: data.map((item) => {
+            const [year, month, day, hour, minute] = item.datetime;
+            return `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
+        }),
+        datasets: [
+            {
+                label: 'LAeq (Noise Level)',
+                data: data.map((item) => item.laeq),
+                borderColor: 'rgba(75, 192, 192, 1)',
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                fill: true,
+                tension: 0.4, // Smooth curve
+            },
+        ],
+    };
+
     return (
         <div className="data-popup-overlay" onClick={onClose}>
             <div className="data-popup" onClick={(e) => e.stopPropagation()}>
@@ -14,27 +36,10 @@ const DataPopup: React.FC<DataPopupProps> = ({ data, onClose }) => {
                     ×
                 </button>
                 <h2>Monitor Data</h2>
-                <ul>
-                    {data.map((item) => (
-                        <li key={item.id}>
-                            <strong>DateTime:</strong> {formatDateTime(item.datetime)}
-                            <br />
-                            <strong>LAeq:</strong> {item.laeq}
-                        </li>
-                    ))}
-                </ul>
+                <Line data={chartData} options={{ responsive: true, maintainAspectRatio: false }} />
             </div>
         </div>
     );
-};
-
-const formatDateTime = (datetime: [number, number, number, number, number]) => {
-    const [year, month, day, hour, minute] = datetime;
-    return `${year}-${month.toString().padStart(2, '0')}-${day
-        .toString()
-        .padStart(2, '0')} ${hour.toString().padStart(2, '0')}:${minute
-        .toString()
-        .padStart(2, '0')}`;
 };
 
 export default DataPopup;
