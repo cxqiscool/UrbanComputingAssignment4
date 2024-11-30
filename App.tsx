@@ -9,7 +9,7 @@ export default function App() {
     const [selectedMonitor, setSelectedMonitor] = useState<Monitor | null>(null);
 
     useEffect(() => {
-        fetch('http://localhost:8080/api/monitors')
+        fetch('http://51.145.37.128:8080/api/monitors')
             .then((response) => response.json())
             .then((json) => {
                 setData(json);

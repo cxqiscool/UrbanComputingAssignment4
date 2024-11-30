@@ -76,7 +76,7 @@ const MapView: React.FC<MapViewProps> = ({ monitors, selectedMonitor }) => {
         setLoadingData(true);
         setError(null);
         try {
-            const response = await fetch(`http://localhost:8080/api/monitors/${serialNumber}/data`);
+            const response = await fetch(`http://51.145.37.128:8080/api/monitors/${serialNumber}/data`);
             if (!response.ok) {
                 throw new Error('Failed to fetch monitor data');
             }
